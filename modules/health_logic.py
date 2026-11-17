@@ -30,8 +30,19 @@ class HealthLogic(HealthManager):
     def add_record(self, id, name, birth, gender, height, weight):     # 건강정보를 추가하는 메소드
         pass
 
+    '''
+    AI 사용
+    '''
     def check_duplicate(self):      # 중복 데이터 검사하는 메소드
-        pass
+        for existing in self.records:
+            if existing.id == records.id:
+                return True
+
+            if (existing.name == records.name and
+                existing.birth_year == records.birth_year and
+                existing.gender == records.gender):
+                return True
+            return False
 
     def get_all_records(self):      # 전체 목록 반환하는 메소드
         pass
