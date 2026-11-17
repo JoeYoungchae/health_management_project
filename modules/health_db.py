@@ -14,7 +14,7 @@
 클래스:
     - HealthRecord: 한 사람의 건강 기록(식별번호, 이름, 생년, 성별, 키, 몸무게, BMI, 비만도 상태)을 저장하고
         딕셔너리로 변환하는 클래스
-    - HealthManager: 건강 기록 목록을 관리하고, 식별번호 생성 및 JSON, CSV, TXT, Pickle 파일의
+    - HealthDatabase: 건강 기록 목록을 관리하고, 식별번호 생성 및 JSON, CSV, TXT, Pickle 파일의
         저장과 불러오기를 담당하는 클래스
 
 ** AI 사용한 코드 **
@@ -54,7 +54,7 @@ class HealthRecord:
             "status":self.status
         }
     
-class HealthManager:
+class HealthDatabase:
     def __init__(self):     # 데이터 목록 초기화
         self.records = []
 
