@@ -42,8 +42,12 @@ class HealthLogic(HealthManager):
         return round(bmi, 1)
 
     def add_record(self, id, name, birth, gender, height, weight):     # UI에서 건강정보를 추가하는 메소드
-        if self.check_duplicate() == False:
-            pass
+        if self.check_duplicate(name, birth, gender):
+            return False
+
+        if type(height) == 'float' and type(weight) == 'float':
+            self.calculate_bmi(height, weight)
+        
 
         else:
             print("중복된 정보입니다.")
