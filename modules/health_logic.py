@@ -15,7 +15,8 @@
     - HealthLogic
 '''
 
-from health_db import HealthManager
+import csv
+from health_db import HealthManager, HealthRecord
 
 class HealthLogic(HealthManager):
     def __init__(self, id, name, birth, gender, height, weight):
@@ -27,22 +28,30 @@ class HealthLogic(HealthManager):
         self.height = height
         self.weight = weight
 
-    def add_record(self, id, name, birth, gender, height, weight):     # 건강정보를 추가하는 메소드
-        pass
-
-    '''
-    AI 사용
-    '''
-    def check_duplicate(self):      # 중복 데이터 검사하는 메소드
-        for existing in self.records:
-            if existing.id == records.id:
+    '''AI사용'''
+    def check_duplicate(self, name, birth, gender):      # 중복 데이터 검사하는 메소드
+        for record in self.records:
+            if (record.name == name and
+                record.gender == gender and
+                record.birth == birth):
                 return True
+        return False
 
-            if (existing.name == records.name and
-                existing.birth_year == records.birth_year and
-                existing.gender == records.gender):
-                return True
-            return False
+    def calculate_bmi(self, height, weight):        # BMI 계산
+        bmi = weight / (height / 100) ** 2
+        return round(bmi, 1)
+
+    def add_record(self, id, name, birth, gender, height, weight):     # UI에서 건강정보를 추가하는 메소드
+        if self.check_duplicate() == False:
+            pass
+
+        else:
+            print("중복된 정보입니다.")
+
+    def add_record_CSV(self):          # CSV에서 건강정보를 가져오는 메소드
+        with open("health_data..csv", 'r', encoding="utf-8") as f:
+            reader = csv.reader(f)
+            
 
     def get_all_records(self):      # 전체 목록 반환하는 메소드
         pass
@@ -56,8 +65,6 @@ class HealthLogic(HealthManager):
     def update_records(self):       # 기존 정보 수정
         pass
 
-    def calculate_bmi(self):        # BMI 계산
-        pass
 
     def delete_record(self):        # 건강정보 삭제
         pass
