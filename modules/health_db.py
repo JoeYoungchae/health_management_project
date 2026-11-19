@@ -25,6 +25,7 @@
     - 사용 날짜: 2026.11.13
 '''
 
+import sys
 import json
 import csv
 import pickle
@@ -241,7 +242,7 @@ class HealthManager:
         except OSError:
             print("Pickle 파일 저장 중 오류가 발생했습니다.")
 
-        except pickle.PickleError:
+        except pickle.PicklingError:
             print("Pickle 파일 저장 중 오류가 발생했습니다.")
 
     def load_pkl(self):         # Pickle 불러오기
@@ -271,3 +272,110 @@ class HealthManager:
 
         except OSError:
             print("Pickle 파일을 불러오는 중 오류가 발생했습니다.")
+
+def choice_file(number, manager):
+    if number == 1:     # 선택 창에서 1을 입력 시 json 파일을 불러온다.
+        manager.load_json()
+
+        print("****** 건강정보 목록 ******")
+
+        if len(manager.records) == 0:
+            print("등록된 건강정보가 없습니다.")
+        else:
+            for record in manager.records:
+                print(f"식별번호: {record.id}")
+                print(f"이름: {record.name}")
+                print(f"생년: {record.birth}")
+                print(f"성별: {record.gender}")
+                print(f"키: {record.height}")
+                print(f"몸무게: {record.weight}")
+                print(f"BMI: {record.bmi}")
+                print(f"비만도: {record.status}")
+                print("----------------------")
+        print(f"총 등록 인원: {len(manager.records)}명")
+
+    elif number == 2:       # 선택 창에서 2를 입력 시 CSV 파일을 불러온다.
+        manager.load_csv()
+
+        print("****** 건강정보 목록 ******")
+
+        if len(manager.records) == 0:
+            print("등록된 건강정보가 없습니다.")
+        else:
+            for record in manager.records:
+                print(f"식별번호: {record.id}")
+                print(f"이름: {record.name}")
+                print(f"생년: {record.birth}")
+                print(f"성별: {record.gender}")
+                print(f"키: {record.height}")
+                print(f"몸무게: {record.weight}")
+                print(f"BMI: {record.bmi}")
+                print(f"비만도: {record.status}")
+                print("----------------------")
+        print(f"총 등록 인원: {len(manager.records)}명")
+
+    elif number == 3:       # 선택 창에서 3을 입력 시 Pickle 파일을 불러온다.
+        manager.load_pkl()
+
+        print("****** 건강정보 목록 ******")
+
+        if len(manager.records) == 0:
+            print("등록된 건강정보가 없습니다.")
+        else:
+            for record in manager.records:
+                print(f"식별번호: {record.id}")
+                print(f"이름: {record.name}")
+                print(f"생년: {record.birth}")
+                print(f"성별: {record.gender}")
+                print(f"키: {record.height}")
+                print(f"몸무게: {record.weight}")
+                print(f"BMI: {record.bmi}")
+                print(f"비만도: {record.status}")
+                print("----------------------")
+        print(f"총 등록 인원: {len(manager.records)}명")
+
+    elif number == 4:       # 선택 창에서 4를 입력 시 txt 파일을 불러온다.
+        manager.load_txt()
+
+        print("****** 건강정보 목록 ******")
+
+        if len(manager.records) == 0:
+            print("등록된 건강정보가 없습니다.")
+        else:
+            for record in manager.records:
+                print(f"식별번호: {record.id}")
+                print(f"이름: {record.name}")
+                print(f"생년: {record.birth}")
+                print(f"성별: {record.gender}")
+                print(f"키: {record.height}")
+                print(f"몸무게: {record.weight}")
+                print(f"BMI: {record.bmi}")
+                print(f"비만도: {record.status}")
+                print("----------------------")
+        print(f"총 등록 인원: {len(manager.records)}명")
+
+    else:
+        print("잘못된 입력입니다.")
+
+
+def main():
+    manager = HealthManager()    # HealthManager 객체 생성
+
+    print("어서오세요, 파일에 등록된 건강정보를 불러오는 프로그램입니다.")
+    print("1. JSON 파일")
+    print("2. CSV 파일")
+    print("3. Pickle 파일")
+    print("4. txt 파일")
+
+    number = int(input("불러오고 싶은 파일 형식을 선택하세요: "))
+    print("")
+
+    choice_file(number, manager)
+
+
+if __name__ == "__main__":
+    # health_db라는 이름이 현재 실행 중인 모듈을 가리키도록 연결
+    sys.modules["health_db"] = sys.modules["__main__"]
+    # 현재 클래스가 피클에서 health_db.HealthRecord라는 이름으로 식별되도록 변경
+    HealthRecord.__module__ = "health_db"
+    main()
