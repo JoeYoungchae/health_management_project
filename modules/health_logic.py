@@ -19,16 +19,14 @@ import csv
 from health_db import HealthManager, HealthRecord
 
 class HealthLogic(HealthManager):
-    def __init__(self, id, name, birth, gender, height, weight):
+    def __init__(self):
         super().__init__()
-        self.id = id
-        self.name = name
-        self.birth = birth
-        self.gender = gender
-        self.height = height
-        self.weight = weight
 
-    '''AI사용'''
+    '''
+        AI 종류: ChatGPT (GPT-6)
+        AI 사용 목적: 입력받은 데이터와 기존 데이터 간 비교를 어떻게 해야할 지 어려움을 겪었다.
+        사용 날짜: 2026.11.18
+    '''
     def check_duplicate(self, name, birth, gender):      # 중복 데이터 검사하는 메소드
         for record in self.records:
             if (record.name == name and
@@ -41,16 +39,48 @@ class HealthLogic(HealthManager):
         bmi = weight / (height / 100) ** 2
         return round(bmi, 1)
 
-    def add_record(self, id, name, birth, gender, height, weight):     # UI에서 건강정보를 추가하는 메소드
+    def add_record(self, name, birth, gender, height, weight):     # UI에서 건강정보를 추가하는 메소드
         if self.check_duplicate(name, birth, gender):
+            print("중복된 정보입니다.")
             return False
 
-        if type(height) == 'float' and type(weight) == 'float':
-            self.calculate_bmi(height, weight)
-        
+        '''
+        AI 종류: ChatGPT (GPT-6)
+        AI 사용 목적: 생년, 키, 몸무게가 숫자가 아닐 경우 오류를 처리하기 위함.
+        사용 날짜: 2026.11.19
+        '''
+        try:
+            birth = int(birth)
+            height = float(height)
+            weight = float(weight)
 
+        except ValueError:
+            print("생년, 키, 몸무게는 숫자로 입력해야 합니다.")
+            return False
+
+        if type(height) == float and type(weight) == float:
+            bmi = self.calculate_bmi(height, weight)
+
+        if bmi < 18.5:
+            status = "저체중"
+        elif bmi < 23.0:
+            status = "정상"
+        elif bmi < 25.0:
+            status = "과체중"
+        elif bmi < 30.0:
+            status = "1단계 비만"
+        elif bmi < 35.0:
+            status = "2단계 비만"
         else:
-            print("중복된 정보입니다.")
+            status = "고도비만"
+
+        newID = self.generate_patient_id()
+        newRecord = HealthRecord(newID, name, birth, gender, height, weight, bmi, status)
+        self.records.append(newRecord)
+        
+        self.save_json()
+
+        return True        
 
     def add_record_CSV(self):          # CSV에서 건강정보를 가져오는 메소드
         with open("health_data..csv", 'r', encoding="utf-8") as f:
