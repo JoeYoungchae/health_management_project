@@ -21,6 +21,7 @@ from health_db import HealthManager, HealthRecord
 class HealthLogic(HealthManager):
     def __init__(self):
         super().__init__()
+        self.load_json()
 
     '''
         AI 종류: ChatGPT (GPT-6)
@@ -127,6 +128,18 @@ class HealthLogic(HealthManager):
     def get_all_records(self):      # 전체 목록 반환하는 메소드
         return self.records
 
+    def print_record(self, record):
+        print("\n========== 건강정보 ==========")
+        print(f"식별번호 : {record.id}")
+        print(f"이름     : {record.name}")
+        print(f"생년     : {record.birth}")
+        print(f"성별     : {record.gender}")
+        print(f"키       : {record.height}cm")
+        print(f"몸무게   : {record.weight}kg")
+        print(f"BMI      : {record.bmi}")
+        print(f"비만도   : {record.status}")
+        print("==============================")
+
     def get_record(self, id):           # 식별번호로 상세 조회
         for record in self.records:
             if id == record.id:
@@ -208,3 +221,202 @@ class HealthLogic(HealthManager):
         bmiAvg = sumBMI / count
 
         return weightAvg, heightAvg, bmiAvg
+
+    
+    
+    def main(self):
+
+        while True:
+
+            print("\n================================")
+            print("       건강정보 관리 프로그램")
+            print("================================")
+            print("1. 건강정보 등록")
+            print("2. CSV 파일 불러오기")
+            print("3. 전체 목록 조회")
+            print("4. 건강정보 검색")
+            print("5. 건강정보 수정")
+            print("6. 건강정보 삭제")
+            print("7. 전체 통계 조회")
+            print("0. 프로그램 종료")
+            print("================================")
+
+            choice = input("메뉴 선택: ").strip()
+
+            # 1. 건강정보 등록
+            if choice == "1":
+
+                name = input("이름: ").strip()
+                birth = input("생년: ").strip()
+                gender = input("성별: ").strip()
+                height = input("키(cm): ").strip()
+                weight = input("몸무게(kg): ").strip()
+
+                result = self.add_record(
+                    name, birth, gender, height, weight
+                )
+
+                if result:
+                    print("\n건강정보 등록 성공!")
+                    self.print_record(self.records[-1])
+                else:
+                    print("\n등록 실패! 입력값 또는 중복 여부를 확인하세요.")
+
+            # 2. CSV 파일 불러오기
+            elif choice == "2":
+
+                result = self.add_record_CSV()
+
+                if result:
+                    print("\nCSV 파일 불러오기가 완료되었습니다.")
+                    print(f"현재 등록 인원: {len(self.records)}명")
+                else:
+                    print("\nCSV 파일을 불러오지 못했습니다.")
+                    print("파일 경로와 파일 이름을 확인하세요.")
+
+            # 3. 전체 목록 조회
+            elif choice == "3":
+
+                records = self.get_all_records()
+
+                if len(records) == 0:
+                    print("\n등록된 건강정보가 없습니다.")
+
+                else:
+                    print("\n========== 전체 건강정보 ==========")
+                    print(f"전체 등록 인원: {len(records)}명")
+
+                    for record in records:
+                        self.print_record(record)
+
+            # 4. 건강정보 검색
+            elif choice == "4":
+
+                keyword = input(
+                    "이름 또는 식별번호 입력: "
+                ).strip()
+
+                if keyword == "":
+                    print("\n검색어를 입력하세요.")
+                    continue
+
+                results = self.search_records(keyword)
+
+                if len(results) > 0:
+
+                    print(f"\n검색 결과: {len(results)}건")
+
+                    for record in results:
+                        self.print_record(record)
+
+                else:
+                    print("\n검색 결과가 없습니다.")
+
+            # 5. 건강정보 수정
+            elif choice == "5":
+
+                patient_id = input(
+                    "수정할 식별번호: "
+                ).strip()
+
+                record = self.get_record(patient_id)
+
+                if record is None:
+                    print("\n해당 정보를 찾을 수 없습니다.")
+                    continue
+
+                print("\n현재 건강정보")
+                self.print_record(record)
+
+                height = input("\n새로운 키(cm): ").strip()
+                weight = input("새로운 몸무게(kg): ").strip()
+
+                result = self.update_records(
+                    patient_id, height, weight
+                )
+
+                if result:
+
+                    print("\n건강정보 수정 성공!")
+
+                    updated_record = self.get_record(patient_id)
+
+                    print("\n수정된 건강정보")
+                    self.print_record(updated_record)
+
+                else:
+                    print("\n수정 실패! 입력값을 확인하세요.")
+
+            # 6. 건강정보 삭제
+            elif choice == "6":
+
+                patient_id = input(
+                    "삭제할 식별번호: "
+                ).strip()
+
+                record = self.get_record(patient_id)
+
+                if record is None:
+                    print("\n해당 정보를 찾을 수 없습니다.")
+                    continue
+
+                print("\n삭제할 건강정보")
+                self.print_record(record)
+
+                confirm = input(
+                    "\n정말 삭제하시겠습니까? (y/n): "
+                ).strip().lower()
+
+                if confirm == "y":
+
+                    result = self.delete_record(patient_id)
+
+                    if result:
+                        print("\n건강정보 삭제 완료!")
+                    else:
+                        print("\n삭제에 실패했습니다.")
+
+                elif confirm == "n":
+                    print("\n삭제를 취소했습니다.")
+
+                else:
+                    print("\n잘못된 입력입니다. 삭제를 취소합니다.")
+
+            # 7. 전체 통계 조회
+            elif choice == "7":
+
+                statistics = self.get_statistics()
+
+                if statistics is False:
+
+                    print("\n등록된 데이터가 없습니다.")
+
+                else:
+
+                    weightAvg, heightAvg, bmiAvg = statistics
+
+                    print("\n========== 전체 통계 ==========")
+                    print(f"전체 인원수 : {len(self.records)}명")
+                    print(f"평균 키     : {heightAvg:.1f}cm")
+                    print(f"평균 몸무게 : {weightAvg:.1f}kg")
+                    print(f"평균 BMI    : {bmiAvg:.1f}")
+                    print("===============================")
+
+            # 0. 프로그램 종료
+            elif choice == "0":
+
+                print("\n프로그램을 종료합니다.")
+                break
+
+            # 잘못된 메뉴 입력
+            else:
+
+                print("\n잘못된 메뉴입니다. 다시 선택하세요.")
+
+
+# 프로그램 시작
+if __name__ == "__main__":
+
+    health = HealthLogic()
+
+    health.main()
